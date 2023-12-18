@@ -393,6 +393,8 @@ void start_screen()
     sf::Text opening_text;
     sf::Text left_text;
     sf::Text right_text;
+    sf::Texture logo_texture;
+    sf::Sprite logo;
 
     sf::Texture background;
     sf::Font font;
@@ -404,12 +406,17 @@ void start_screen()
         cout << "Error loading fonts" << endl;
     }
 
+    if (!logo_texture.loadFromFile("/Users/aadrijupadya/Downloads/logo.png"))
+    {
+        cout << "Error loading image" << endl;
+    }
+
     left_button.setSize(sf::Vector2f(150, 50));
-    left_button.setPosition(80.f, 200.f);
+    left_button.setPosition(80.f, 100.f);
     left_button.setFillColor(sf::Color::White);
 
     right_button.setSize(sf::Vector2f(150, 50));
-    right_button.setPosition(400.f, 200.f);
+    right_button.setPosition(400.f, 100.f);
     right_button.setFillColor(sf::Color::White);
 
     left_text.setFont(font);
@@ -417,14 +424,14 @@ void start_screen()
     left_text.setCharacterSize(30);
     left_text.setFillColor(sf::Color::Red);
     left_text.setStyle(sf::Text::Bold);
-    left_text.setPosition(120.f, 200.f);
+    left_text.setPosition(120.f, 100.f);
 
     right_text.setFont(font);
     right_text.setString("Rules");
     right_text.setCharacterSize(30);
     right_text.setFillColor(sf::Color::Red);
     right_text.setStyle(sf::Text::Bold);
-    right_text.setPosition(440.f, 200.f);
+    right_text.setPosition(440.f, 100.f);
 
     opening_text.setFont(font);
     opening_text.setString("Fantastical Basketball");
@@ -433,6 +440,8 @@ void start_screen()
     opening_text.setStyle(sf::Text::Bold);
     opening_text.setPosition(200.f, 20.f);
 
+    logo.setTexture(logo_texture);
+    logo.setPosition(400.f, 260.f);
     while (window.isOpen())
     {
         sf::Event event;
