@@ -258,12 +258,10 @@ void run_game()
         {
             if (!(check_oob(player_1_image)))
             {
-                cout << player_1_image.getPosition().x;
                 player_1_image.move(-0.05, 0);
             }
             else
             {
-                cout << "ok" << endl;
                 player_1_image.setPosition(player_1_image.getPosition().x + 10, 330);
             }
         }
@@ -286,7 +284,6 @@ void run_game()
             }
             else
             {
-                cout << "aight" << endl;
                 player_2_image.setPosition(player_2_image.getPosition().x + 10, 330);
             }
         }
@@ -384,7 +381,36 @@ void run_game()
         game_window.display();
     }
 }
+void display_rules()
+{
+    sf::RenderWindow rules_window(sf::VideoMode(800, 300), "Rules");
+    sf::Text rules_text;
+    sf::Font font;
+    sf::Event event;
 
+    if (!font.loadFromFile("/Users/aadrijupadya/Downloads/roboto/Roboto-Medium.ttf"))
+    {
+        cout << "Error loading fonts" << endl;
+    }
+
+    rules_text.setFont(font);
+    rules_text.setString("1. Two players can play this game at a time.\n2. One player uses the arrow keys (up to jump, right, and left for horizontal movement) while the other uses the WASD keys.\n3. Shoot the ball into the basket that you are facing to score points. \n4. All shots are worth the same amount, score more than your opponent to win.\n5. If you miss a shot, you can rebound it by moving your player near the ball so they catch it. \n6. Prevent your opponent from scoring by blocking their shot with your player.\n7. The first player to score 11 points will win the game.");
+    rules_text.setCharacterSize(15);
+    rules_text.setFillColor(sf::Color::Red);
+    rules_text.setStyle(sf::Text::Bold);
+
+    while (rules_window.isOpen())
+    {
+        while (rules_window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                rules_window.close();
+        }
+        rules_window.clear();
+        rules_window.draw(rules_text);
+        rules_window.display();
+    }
+}
 void start_screen()
 {
     sf::RenderWindow window(sf::VideoMode(640, 480), "Fantastical Basketball");
@@ -441,7 +467,7 @@ void start_screen()
     opening_text.setPosition(200.f, 20.f);
 
     logo.setTexture(logo_texture);
-    logo.setPosition(400.f, 260.f);
+    logo.setPosition(140.f, 120.f);
     while (window.isOpen())
     {
         sf::Event event;
@@ -452,25 +478,26 @@ void start_screen()
                 window.close();
             if (event.type == sf::Event::MouseButtonPressed)
             {
-                if ((event.mouseButton.x <= 230) && (event.mouseButton.x >= 80) && (event.mouseButton.y >= 200) && (event.mouseButton.y <= 250))
+                if ((event.mouseButton.x <= 230) && (event.mouseButton.x >= 80) && (event.mouseButton.y >= 100) && (event.mouseButton.y <= 150))
                 {
                     run_game();
                 }
-                else if ((event.mouseButton.x <= 550) && (event.mouseButton.x >= 400) && (event.mouseButton.y >= 200) && (event.mouseButton.y <= 250))
+                else if ((event.mouseButton.x <= 550) && (event.mouseButton.x >= 400) && (event.mouseButton.y >= 100) && (event.mouseButton.y <= 150))
                 {
-                    sf::RenderWindow rules_window(sf::VideoMode(500, 600), "Rules");
+                    // sf::RenderWindow rules_window(sf::VideoMode(500, 600), "Rules");
 
-                    while (rules_window.isOpen())
-                    {
-                        while (rules_window.pollEvent(event))
-                        {
-                            if (event.type == sf::Event::Closed)
-                                rules_window.close();
-                        }
-                        rules_window.clear();
+                    // while (rules_window.isOpen())
+                    // {
+                    //     while (rules_window.pollEvent(event))
+                    //     {
+                    //         if (event.type == sf::Event::Closed)
+                    //             rules_window.close();
+                    //     }
+                    //     rules_window.clear();
 
-                        rules_window.display();
-                    }
+                    //     rules_window.display();
+                    // }
+                    display_rules();
                 }
             }
         }
@@ -480,6 +507,7 @@ void start_screen()
         window.draw(right_button);
         window.draw(opening_text);
         window.draw(left_text);
+        window.draw(logo);
         window.draw(right_text);
         window.display();
     }
