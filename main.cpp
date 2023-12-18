@@ -15,12 +15,35 @@ using namespace std;
 
 bool check_oob(sf::Sprite spr)
 {
-    if (spr.getPosition().x >= 750 || spr.getPosition().x <= 0)
+    if (spr.getPosition().x >= 750 || spr.getPosition().x <= 0 || spr.getPosition().x + 40 >= 750 || spr.getPosition().x - 40 <= 0 || spr.getPosition().y + 50 >= 480)
     {
         return true;
     }
     return false;
 }
+
+bool check_ball_poss(sf::CircleShape shape, sf::Sprite spr)
+{
+    if (spr.getGlobalBounds().intersects(shape.getGlobalBounds()))
+    {
+        return true;
+    }
+    return false;
+}
+
+bool check_ground(sf::Sprite spr)
+{
+    if (spr.getPosition().y < 340)
+    {
+        return false;
+    }
+    return true;
+}
+
+// bool check_ball_hit(sf::CircleShape shape, sf::RectShape crt, sf::Sprite spr, sf::Sprite, spr)
+// {
+// }
+
 void run_game()
 {
     string name1, name2;
@@ -34,8 +57,11 @@ void run_game()
     int score_1 = 0;
     sf::Text score_2_text;
     int score_2 = 0;
+
     sf::Texture player_1_texture;
     sf::Texture hoop_texture;
+    sf::CircleShape ball(10);
+    ball.setFillColor(sf::Color(250, 150, 100));
 
     if (!player_1_texture.loadFromFile("/Users/aadrijupadya/Downloads/player_new.png"))
     {
@@ -54,11 +80,23 @@ void run_game()
     sf::Sprite right_hoop;
 
     sf::Texture background;
+    sf::RectangleShape court;
+
     sf::Font font;
     sf::Keyboard keys;
     sf::Event event;
     bool p1_left = false, p2_left = false, p1_right = false, p2_right = false;
-    ;
+
+    float gravity = 0.0001f;
+    float jumpvel = -0.15f;
+    float yvel_1 = 0, yvel_2 = 0;
+    const float maxY = 330;
+    const float max_ballY = 215;
+    float ballvel = 0.03f;
+    bool jump_1 = false,
+         jump_2 = false;
+    bool player_1_poss = false, player_2_poss = false;
+    bool collisionOccurred = false;
 
     if (!font.loadFromFile("/Users/aadrijupadya/Downloads/roboto/Roboto-Medium.ttf"))
     {
@@ -96,11 +134,11 @@ void run_game()
 
     player_1_image.setTexture(player_1_texture);
     player_1_image.scale(0.2, 0.22f);
-    player_1_image.setPosition(300, 360);
+    player_1_image.setPosition(250, 340);
 
     player_2_image.setTexture(player_1_texture);
     player_2_image.scale(-0.2f, 0.22f);
-    player_2_image.setPosition(450, 360);
+    player_2_image.setPosition(500, 340);
 
     left_hoop.setTexture(hoop_texture);
     left_hoop.scale(0.2, 0.2);
@@ -109,6 +147,12 @@ void run_game()
     right_hoop.setTexture(hoop_texture);
     right_hoop.scale(-0.2, 0.2);
     right_hoop.setPosition(800, 70);
+
+    ball.setPosition(360, 280);
+
+    court.setSize(sf::Vector2f(750, 30));
+    court.setPosition(0.f, 450.f);
+    court.setFillColor(sf::Color(150, 75, 0));
 
     while (game_window.isOpen())
     {
@@ -145,6 +189,30 @@ void run_game()
                 {
                     p1_right = true;
                 }
+                if (event.key.code == sf::Keyboard::W)
+                {
+                    if (!(check_ground(player_1_image)))
+                    {
+                        jump_1 = false;
+                    }
+                    else
+                    {
+                        yvel_1 = jumpvel;
+                        jump_1 = true;
+                    }
+                }
+                if (event.key.code == sf::Keyboard::Up)
+                {
+                    if (!(check_ground(player_2_image)))
+                    {
+                        jump_2 = false;
+                    }
+                    else
+                    {
+                        yvel_2 = jumpvel;
+                        jump_2 = true;
+                    }
+                }
             }
             else if (event.type == sf::Event::KeyReleased)
             {
@@ -165,6 +233,14 @@ void run_game()
                 {
                     p1_right = false;
                 }
+                else if (event.key.code == sf::Keyboard::W)
+                {
+                    jump_1 = false;
+                }
+                else if (event.key.code == sf::Keyboard::Up)
+                {
+                    jump_2 = false;
+                }
             }
         }
         if (p1_right)
@@ -175,18 +251,20 @@ void run_game()
             }
             else
             {
-                player_1_image.setPosition(player_1_image.getPosition().x - 10, 360);
+                player_1_image.setPosition(player_1_image.getPosition().x - 10, 330);
             }
         }
         if (p1_left)
         {
             if (!(check_oob(player_1_image)))
             {
+                cout << player_1_image.getPosition().x;
                 player_1_image.move(-0.05, 0);
             }
             else
             {
-                player_1_image.setPosition(player_1_image.getPosition().x + 10, 360);
+                cout << "ok" << endl;
+                player_1_image.setPosition(player_1_image.getPosition().x + 10, 330);
             }
         }
         if (p2_right)
@@ -197,7 +275,7 @@ void run_game()
             }
             else
             {
-                player_2_image.setPosition(player_2_image.getPosition().x - 10, 360);
+                player_2_image.setPosition(player_2_image.getPosition().x - 10, 330);
             }
         }
         if (p2_left)
@@ -208,8 +286,87 @@ void run_game()
             }
             else
             {
-                player_2_image.setPosition(player_2_image.getPosition().x + 10, 360);
+                cout << "aight" << endl;
+                player_2_image.setPosition(player_2_image.getPosition().x + 10, 330);
             }
+        }
+        player_1_image.move(0, yvel_1);
+        player_2_image.move(0, yvel_2);
+
+        if (jump_1)
+        {
+            if (!(check_ground(player_1_image)))
+            {
+                yvel_1 += gravity;
+            }
+            else if ((player_1_image.getPosition().y <= maxY))
+            {
+                jump_1 = false;
+                yvel_1 = 0;
+            }
+        }
+        else
+        {
+            if (!(check_ground(player_1_image)))
+            {
+                yvel_1 += gravity;
+            }
+            else
+            {
+                yvel_1 = 0;
+            }
+        }
+
+        if (jump_2)
+        {
+            if (!(check_ground(player_2_image)))
+            {
+                yvel_2 += gravity;
+            }
+            else if ((player_2_image.getPosition().y <= maxY))
+            {
+                jump_2 = false;
+                yvel_2 = 0;
+            }
+        }
+        else
+        {
+            if (!(check_ground(player_2_image)))
+            {
+                yvel_2 += gravity;
+            }
+            else
+            {
+                yvel_2 = 0;
+            }
+        }
+        if (check_ball_poss(ball, player_1_image) && !player_2_poss)
+        {
+            ball.setPosition(player_1_image.getPosition().x + 60, player_1_image.getPosition().y + 50);
+            player_1_poss = true;
+        }
+        if (check_ball_poss(ball, player_2_image) && !player_1_poss)
+        {
+            ball.setPosition(player_2_image.getPosition().x - 60, player_2_image.getPosition().y + 50);
+            player_2_poss = true;
+        }
+        // if (!player_1_poss && !player_2_poss)
+        // {
+        //     ballvel = 0.01f;
+        // }
+        if ((ball.getGlobalBounds().intersects(court.getGlobalBounds()) && !collisionOccurred) || ball.getPosition().y <= max_ballY)
+        {
+            ballvel = -ballvel;
+            // cout << ballvel << endl;
+            collisionOccurred = true;
+        }
+        else if (!ball.getGlobalBounds().intersects(court.getGlobalBounds()))
+        {
+            collisionOccurred = false;
+        }
+        if (!player_1_poss && !player_2_poss)
+        {
+            ball.move(0, ballvel);
         }
 
         game_window.clear();
@@ -219,8 +376,11 @@ void run_game()
         game_window.draw(score_2_text);
         game_window.draw(player_1_image);
         game_window.draw(player_2_image);
+        game_window.draw(court);
+
         game_window.draw(left_hoop);
         game_window.draw(right_hoop);
+        game_window.draw(ball);
         game_window.display();
     }
 }
@@ -285,7 +445,6 @@ void start_screen()
             {
                 if ((event.mouseButton.x <= 230) && (event.mouseButton.x >= 80) && (event.mouseButton.y >= 200) && (event.mouseButton.y <= 250))
                 {
-                    std::cout << "Ready to play!" << std::endl;
                     run_game();
                 }
                 else if ((event.mouseButton.x <= 550) && (event.mouseButton.x >= 400) && (event.mouseButton.y >= 200) && (event.mouseButton.y <= 250))
@@ -296,8 +455,6 @@ void start_screen()
                     {
                         while (rules_window.pollEvent(event))
                         {
-                            std::cout << "Here are the rules" << std::endl;
-
                             if (event.type == sf::Event::Closed)
                                 rules_window.close();
                         }

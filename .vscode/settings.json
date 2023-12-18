@@ -7,6 +7,16 @@
         "istream": "cpp",
         "locale": "cpp",
         "memory": "cpp",
-        "tuple": "cpp"
+        "tuple": "cpp",
+        "system_error": "cpp",
+        "__hash_table": "cpp",
+        "__split_buffer": "cpp",
+        "__tree": "cpp",
+        "atomic": "cpp",
+        "map": "cpp",
+        "set": "cpp",
+        "string": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp"
     }
 }
